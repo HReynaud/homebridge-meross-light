@@ -34,6 +34,10 @@ class Meross {
     this.log = log;
     this.config = config;
 
+    this.bri = 0;
+    this.rgb = 0;
+    this.hue = 0;
+
     /*
      * A HomeKit accessory can have many "services". This will create our base service,
      * Service types are defined in this code: https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js
@@ -89,27 +93,8 @@ class Meross {
     }
      */
     switch (config.model) {
-      case "MSS110-1":
-      case "MSS110-2":
-      case "MSS210":
-      case "MSS310":
-      case "MSS420F":
-      case "MSS425":
-      case "MSS425E":
-      case "MSS425F":
-      case "MSS620":
-        this.service = new Service.Outlet(this.config.name);
-        break;
-      case "MSS510":
-      case "MSS510M":
-      case "MSS550":
-      case "MSS560":
-      case "MSS570":
-      case "MSS5X0":
-        this.service = new Service.Switch(this.config.name);
-        break;
-      case "MSG100":
-        this.service = new Service.GarageDoorOpener(this.config.name);
+      case "MSL120":
+        this.service = new Service.Lightbulb(this.config.name);
         break;
       default:
         this.service = new Service.Outlet(this.config.name);
@@ -134,17 +119,23 @@ class Meross {
      * 'set' is called when HomeKit wants to update the value of the characteristic
      */
     switch (this.config.model) {
-      case "MSG100":
+      case "MSL120":
         this.service
-          .getCharacteristic(Characteristic.CurrentDoorState)
-          .on("get", this.getDoorStateHandler.bind(this));
+          .getCharacteristic(Characteristic.On)
+          .on("get", this.getOnCharacteristicHandler.bind(this))
+          .on("set", this.setOnCharacteristicHandler.bind(this));
         this.service
-          .getCharacteristic(Characteristic.TargetDoorState)
-          .on("get", this.getDoorStateHandler.bind(this))
-          .on("set", this.setDoorStateHandler.bind(this));
+          .addCharacteristic(Characteristic.Brightness)
+          .on("get", this.getBriCharacteristicHandler.bind(this))
+          .on("set", this.setHBriCharacteristicHandler.bind(this));
         this.service
-          .getCharacteristic(Characteristic.ObstructionDetected)
-          .on("get", this.getObstructionDetectedHandler.bind(this));
+          .addCharacteristic(Characteristic.Hue)
+          .on("get", this.getHueCharacteristicHandler.bind(this))
+          .on("set", this.setHueCharacteristicHandler.bind(this));
+        this.service
+          .addCharacteristic(Characteristic.Saturation)
+          .on("get", this.getSatCharacteristicHandler.bind(this))
+          .on("set", this.setSatCharacteristicHandler.bind(this));
         break;
       default:
         this.service
@@ -344,6 +335,81 @@ class Meross {
      */
     callback(null, this.isOn);
   }
+
+  async setBriCharacteristicHandler(level, callback) {
+    /* this is called when HomeKit wants to update the value of the characteristic as defined in our getServices() function */
+    /* deviceUrl only requires ip address */
+
+    //this.log(this.config, this.config.deviceUrl);
+    let response;
+
+    /* Log to the console whenever this function is called */
+    this.log.debug(`calling setOnCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
+
+    /*
+     * Differentiate requests based on device model.
+     */
+
+    switch (this.config.model) {
+      default:
+        try {
+          response = await doRequest({
+            json: true,
+            method: "POST",
+            strictSSL: false,
+            url: `http://${this.config.deviceUrl}/config`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              payload: {
+                light: {
+                  channel: `${this.config.channel}`,
+                  luminance: `${level}`,
+                  capacity: `1`,
+                },
+              },
+              header: {
+                messageId: `${this.config.messageId}`,
+                method: "SET",
+                from: `http://${this.config.deviceUrl}\/config`,
+                namespace: "Appliance.Control.Light",
+                timestamp: this.config.timestamp,
+                sign: `${this.config.sign}`,
+                payloadVersion: 1,
+              },
+            },
+          });
+        } catch (e) {
+          this.log(
+            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+            e
+          );
+        }
+    }
+
+    if (response) {
+      this.isOn = true;
+      this.bri = level;
+      this.log.debug("Set succeeded:", response);
+      this.log(`${this.config.model} set brightness to`, level);
+    } else {
+      this.log("Set brightness failed:", this.bri);
+    }
+
+    /* Log to the console the value whenever this function is called */
+    this.log.debug("setOnCharacteristicHandler:", value);
+
+    /*
+     * The callback function should be called to return the value
+     * The first argument in the function should be null unless and error occured
+     */
+    callback(null, this.bri);
+  } 
+
+
+
+  
 
   async getDoorStateHandler(callback) {
     /*
