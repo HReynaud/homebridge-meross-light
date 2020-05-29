@@ -483,7 +483,9 @@ class Meross {
      * Differentiate requests based on device model.
      */
 
-    this.log("Temperature Level: "+ level);
+    this.log.debug("Temperature Level IN: " + level);
+    level = Math.floor( (level-140)/(500-140)*100 )
+    this.log.debug("Temperature Level OUT: "+ level);
 
     switch (this.config.model) {
       default:
