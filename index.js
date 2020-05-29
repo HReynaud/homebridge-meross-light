@@ -859,5 +859,14 @@ function RGB2BULB(rgb){
   let g = Math.round(rgb[1]);
   let b = Math.round(rgb[2]);
 
-  return Math.round((r*255+g)*255+b)
+  let tmp = Math.round((r*255+g)*255+b)
+  
+  if(tmp > 8000000){
+    out = 16581375;
+  }else if(tmp > 30000){
+    out = 65025;
+  }else{
+    out = 255;
+  }
+  return out;
 }
