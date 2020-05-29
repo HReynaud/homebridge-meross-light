@@ -38,7 +38,7 @@ class Meross {
     this.tmp = 0;
     this.rgb = 0;
     this.hue = 0;
-    this.sat = 0;
+    this.sat = 100;
 
     this.mode = 1; // 0 = temperature, 1 = rgb
 
@@ -134,10 +134,10 @@ class Meross {
           .addCharacteristic(Characteristic.Hue)
           //.on("get", this.getHueCharacteristicHandler.bind(this))
           .on("set", this.setHueCharacteristicHandler.bind(this));
-        this.service
-          .addCharacteristic(Characteristic.Saturation)
-          //.on("get", this.getSatCharacteristicHandler.bind(this))
-          .on("set", this.setSatCharacteristicHandler.bind(this));
+        // this.service
+        //   .addCharacteristic(Characteristic.Saturation)
+        //   //.on("get", this.getSatCharacteristicHandler.bind(this))
+        //   .on("set", this.setSatCharacteristicHandler.bind(this));
         // this.service
         //   .addCharacteristic(Characteristic.ColorTemperature)
         //   .on("get", this.getTmpCharacteristicHandler.bind(this))
@@ -383,7 +383,7 @@ class Meross {
         }
         break;
       case 1:
-        this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, 100))
+        this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
         try {
           response = await doRequest({
             json: true,
@@ -672,7 +672,7 @@ class Meross {
 
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, 100))
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -748,7 +748,7 @@ class Meross {
 
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, 100))
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
