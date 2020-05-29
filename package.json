@@ -3,6 +3,9 @@
   "version": "2.1.1",
   "description": "A Meross Lightbulb Plugin for Homebridge",
   "main": "index.js",
+  "keywords": [
+        "homebridge-plugin"
+  ],
   "scripts": {
     "developer": "DEBUG=meross homebridge -D -U `pwd` -P `pwd`",
     "lint": "jshint package.json *.js",
