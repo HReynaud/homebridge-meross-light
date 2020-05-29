@@ -304,6 +304,7 @@ class Meross {
     switch (this.config.model) {
       default:
         if (response) {
+          this.log(response)
           let onOff =
             response.payload.all.digest.togglex[`${this.config.channel}`].onoff;
 
