@@ -449,7 +449,7 @@ class Meross {
       default:
         if (response) {
           this.bri = response.payload.all.digest.light.luminance;
-          this.log.debug("Retrieved status successfully: ", bri);
+          this.log.debug("Retrieved status successfully: ", this.bri);
         } else {
           this.log.debug("Retrieved status unsuccessfully.");
           this.isOn = false;
