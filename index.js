@@ -38,7 +38,7 @@ class Meross {
     this.tmp = 0;
     this.rgb = 0;
     this.hue = 0;
-    this.sat = 100;
+    this.sat = 0;
 
     this.mode = 1; // 0 = temperature, 1 = rgb
 
@@ -134,10 +134,10 @@ class Meross {
           .addCharacteristic(Characteristic.Hue)
           //.on("get", this.getHueCharacteristicHandler.bind(this))
           .on("set", this.setHueCharacteristicHandler.bind(this));
-        // this.service
-        //   .addCharacteristic(Characteristic.Saturation)
-        //   //.on("get", this.getSatCharacteristicHandler.bind(this))
-        //   .on("set", this.setSatCharacteristicHandler.bind(this));
+        this.service
+          .addCharacteristic(Characteristic.Saturation)
+          //.on("get", this.getSatCharacteristicHandler.bind(this))
+          .on("set", this.setSatCharacteristicHandler.bind(this));
         // this.service
         //   .addCharacteristic(Characteristic.ColorTemperature)
         //   .on("get", this.getTmpCharacteristicHandler.bind(this))
@@ -821,6 +821,7 @@ function tempBulb2Home(level){
 
 function HSL2RGB(hue, sat, lit){
   sat = sat/100
+  sat = 1
   lit = lit/100
   /* hue is in 0-360
   *  sat is in 0-1
