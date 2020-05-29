@@ -40,8 +40,6 @@ class Meross {
     this.hue = 0;
     this.sat = 0;
 
-    this.mode = 1; // 0 = temperature, 1 = rgb
-
     /*
      * A HomeKit accessory can have many "services". This will create our base service,
      * Service types are defined in this code: https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js
@@ -132,11 +130,11 @@ class Meross {
           .on("set", this.setBriCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Hue)
-          //.on("get", this.getHueCharacteristicHandler.bind(this))
+          .on("get", this.getHueCharacteristicHandler.bind(this))
           .on("set", this.setHueCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Saturation)
-          //.on("get", this.getSatCharacteristicHandler.bind(this))
+          .on("get", this.getSatCharacteristicHandler.bind(this))
           .on("set", this.setSatCharacteristicHandler.bind(this));
         // this.service
         //   .addCharacteristic(Characteristic.ColorTemperature)
@@ -346,7 +344,7 @@ class Meross {
      */
 
     switch (this.mode) {
-      case 0:
+      default:
         try {
           response = await doRequest({
             json: true,
@@ -362,45 +360,6 @@ class Meross {
                   channel: `${this.config.channel}`,
                   luminance: `${level}`,
                   capacity: '4',
-                },
-              },
-              header: {
-                messageId: `${this.config.messageId}`,
-                method: "SET",
-                from: `http://${this.config.deviceUrl}\/config`,
-                namespace: "Appliance.Control.Light",
-                timestamp: this.config.timestamp,
-                sign: `${this.config.sign}`,
-                payloadVersion: 1,
-              },
-            },
-          });
-        } catch (e) {
-          this.log(
-            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
-            e
-          );
-        }
-        break;
-      case 1:
-        this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
-        this.rgb = HUE2PRIMARY(this.hue);
-        try {
-          response = await doRequest({
-            json: true,
-            method: "POST",
-            strictSSL: false,
-            url: `http://${this.config.deviceUrl}/config`,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              payload: {
-                light: {
-                  channel: `${this.config.channel}`,
-                  luminance: `${this.bri}`,
-                  capacity: '1',
-                  rgb: `${this.rgb}`
                 },
               },
               header: {
@@ -674,7 +633,7 @@ class Meross {
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
     this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
-    this.rgb = HUE2PRIMARY(this.hue);
+    //this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -836,9 +795,7 @@ function tempBulb2Home(level){
 
 function HSL2RGB(hue, sat, lit){
   sat = sat/100
-  sat = 1
   lit = lit/100
-  lit = 0.5
   /* hue is in 0-360
   *  sat is in 0-1
   *  lit is in 0-1 */
@@ -874,16 +831,7 @@ function RGB2BULB(rgb){
   let g = Math.round(rgb[1]);
   let b = Math.round(rgb[2]);
 
-  let tmp = Math.round((r*255+g)*255+b)
-  
-  if(tmp > 8000000){
-    var out = 16713000;
-  }else if(tmp > 30000){
-    var out = 65025;
-  }else{
-    var out = 255;
-  }
-  return out;
+  return Math.round((r*255+g)*255+b);
 }
 
 function HUE2PRIMARY(hue){
