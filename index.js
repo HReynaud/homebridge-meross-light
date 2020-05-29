@@ -389,7 +389,7 @@ class Meross {
     }
 
     /* Log to the console the value whenever this function is called */
-    this.log.debug("setOnCharacteristicHandler:", value);
+    this.log.debug("setBriCharacteristicHandler:", level);
 
     /*
      * The callback function should be called to return the value
