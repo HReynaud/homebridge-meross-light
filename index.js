@@ -131,7 +131,7 @@ class Meross {
         this.service
           .addCharacteristic(Characteristic.Hue)
           .on("set", this.setHueCharacteristicHandler.bind(this));
-          
+
         this.service
           .addCharacteristic(Characteristic.Saturation)
           //.on("get", this.getSatCharacteristicHandler.bind(this))
@@ -786,22 +786,22 @@ function HSL2RGB(hue, sat, lit){
   *  sat is in 0-1
   *  lit is in 0-1 */
 
-  c = (1-Math.abs(2*lit-1))*sat
-  x = c * (1- Math.abs((hue/60)%2-1))
-  m = lit-c/2
+  let c = (1-Math.abs(2*lit-1))*sat
+  let x = c * (1- Math.abs((hue/60)%2-1))
+  let m = lit-c/2
 
   if(hue < 60){
 
   }else if(hue < 120){
-    r = c; g = x; b = 0;
+    let r = c; let g = x; let b = 0;
   }else if(hue < 180){
-    r = x; g = c; b = 0;
+    let r = x; let g = c; let b = 0;
   }else if(hue < 240){
-    r = 0; g = c; b = x;
+    let r = 0; let g = c; let b = x;
   }else if(hue < 300){
-    r = 0; g = x; b = c;
+    let r = 0; let g = x; let b = c;
   }else{
-    r = c; g = 0; b = x;
+    let r = c; let g = 0; let b = x;
   }
 
   r = (r+m)*255
@@ -812,9 +812,9 @@ function HSL2RGB(hue, sat, lit){
 }
 
 function RGB2BULB(rgb){
-  r = rgb[0]
-  g = rgb[1]
-  b = rgb[2]
+  let r = rgb[0]
+  let g = rgb[1]
+  let b = rgb[2]
 
   return (r*255+g)*255+b
 }
