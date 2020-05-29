@@ -476,7 +476,6 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-    this.mode = 0;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -554,7 +553,6 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-    this.mode = 0
     /* Log to the console whenever this function is called */
     this.log.debug(
       `calling getTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`
@@ -622,7 +620,6 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-    this.mode = 1;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -633,7 +630,7 @@ class Meross {
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
     this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
-    //this.rgb = HUE2PRIMARY(this.hue);
+    this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -699,7 +696,6 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-    this.mode = 1;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -710,7 +706,7 @@ class Meross {
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
     this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
-    //this.rgb = HUE2PRIMARY(this.hue);
+    this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -771,14 +767,10 @@ class Meross {
   }
 
   async getHueCharacteristicHandler(callback) {
-
-    this.mode = 1;
     callback(null, this.hue);
   }
 
   async getSatCharacteristicHandler(callback) {
-
-    this.mode = 1;
     callback(null, this.sat);
   }
 
