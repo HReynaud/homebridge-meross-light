@@ -92,13 +92,7 @@ class Meross {
         this.service = new Service.Outlet(this.config.name);
     }
      */
-    switch (config.model) {
-      case "MSL120":
-        this.service = new Service.Lightbulb(this.config.name);
-        break;
-      default:
-        this.service = new Service.Outlet(this.config.name);
-    }
+    this.service = new Service.Lightbulb(this.config.name);
   }
 
   getServices() {
@@ -111,7 +105,7 @@ class Meross {
     const informationService = new Service.AccessoryInformation()
       .setCharacteristic(Characteristic.Manufacturer, "Meross")
       .setCharacteristic(Characteristic.Model, this.config.model)
-      .setCharacteristic(Characteristic.SerialNumber, "❤️");
+      .setCharacteristic(Characteristic.SerialNumber, "123");
 
     /*
      * For each of the service characteristics we need to register setters and getter functions
