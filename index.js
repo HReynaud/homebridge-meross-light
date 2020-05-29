@@ -816,5 +816,5 @@ function RGB2BULB(rgb){
   let g = rgb[1]
   let b = rgb[2]
 
-  return (r*255+g)*255+b
+  return Math.floor((r*255+g)*255+b)
 }
