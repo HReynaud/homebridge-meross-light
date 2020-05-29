@@ -19,7 +19,7 @@ function doRequest(options) {
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-meross-light", "Meross-Light", Meross);
+  homebridge.registerAccessory("homebridge-meross-light", "Meross", Meross);
 };
 
 class Meross {
@@ -93,6 +93,8 @@ class Meross {
     }
      */
     this.service = new Service.Lightbulb(this.config.name);
+    this.log('Created new lightbulb with name' + this.config.model + this.name);
+
   }
 
   getServices() {
