@@ -122,20 +122,20 @@ class Meross {
           .on("set", this.setOnCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Brightness)
-          .on("get", this.getBriCharacteristicHandler.bind(this))
-          .on("set", this.setHBriCharacteristicHandler.bind(this));
+          //.on("get", this.getBriCharacteristicHandler.bind(this))
+          .on("set", this.setBriCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Hue)
-          .on("get", this.getHueCharacteristicHandler.bind(this))
-          .on("set", this.setHueCharacteristicHandler.bind(this));
+          //.on("get", this.getHueCharacteristicHandler.bind(this))
+          //.on("set", this.setHueCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Saturation)
-          .on("get", this.getSatCharacteristicHandler.bind(this))
-          .on("set", this.setSatCharacteristicHandler.bind(this));
+          //.on("get", this.getSatCharacteristicHandler.bind(this))
+          //.on("set", this.setSatCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.ColorTemperature)
-          .on("get", this.getTmpCharacteristicHandler.bind(this))
-          .on("set", this.setTmpCharacteristicHandler.bind(this));
+          //.on("get", this.getTmpCharacteristicHandler.bind(this))
+          //.on("set", this.setTmpCharacteristicHandler.bind(this));
         break;
       default:
         this.service
