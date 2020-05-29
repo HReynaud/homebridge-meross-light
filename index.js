@@ -38,6 +38,7 @@ class Meross {
     this.tmp = 0;
     this.rgb = 0;
     this.hue = 0;
+    this.sat = 0;
 
     /*
      * A HomeKit accessory can have many "services". This will create our base service,
@@ -127,14 +128,14 @@ class Meross {
           .addCharacteristic(Characteristic.Brightness)
           .on("get", this.getBriCharacteristicHandler.bind(this))
           .on("set", this.setBriCharacteristicHandler.bind(this));
-        //this.service
-          //.addCharacteristic(Characteristic.Hue)
-          //.on("get", this.getHueCharacteristicHandler.bind(this))
-          //.on("set", this.setHueCharacteristicHandler.bind(this));
-        //this.service
-          //.addCharacteristic(Characteristic.Saturation)
+        this.service
+          .addCharacteristic(Characteristic.Hue)
+          .on("set", this.setHueCharacteristicHandler.bind(this));
+          
+        this.service
+          .addCharacteristic(Characteristic.Saturation)
           //.on("get", this.getSatCharacteristicHandler.bind(this))
-          //.on("set", this.setSatCharacteristicHandler.bind(this));
+          .on("set", this.setSatCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.ColorTemperature)
           //.on("get", this.getTmpCharacteristicHandler.bind(this))
@@ -615,6 +616,158 @@ class Meross {
     callback(null, this.tmp);
   }
 
+  async setHueCharacteristicHandler(level, callback) {
+    /* this is called when HomeKit wants to update the value of the characteristic as defined in our getServices() function */
+    /* deviceUrl only requires ip address */
+
+    //this.log(this.config, this.config.deviceUrl);
+    let response;
+
+    /* Log to the console whenever this function is called */
+    this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
+
+    /*
+     * Differentiate requests based on device model.
+     */
+
+    this.log.debug("HUE Level IN: " + level);
+    this.hue = level
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.log.debug("RGB Level OUT: "+ this.rgb);
+
+    switch (this.config.model) {
+      default:
+        try {
+          response = await doRequest({
+            json: true,
+            method: "POST",
+            strictSSL: false,
+            url: `http://${this.config.deviceUrl}/config`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              payload: {
+                light: {
+                  channel: `${this.config.channel}`,
+                  luminance: `${this.bri}`,
+                  capacity: '1',
+                  rgb: `${this.rgb}`
+                },
+              },
+              header: {
+                messageId: `${this.config.messageId}`,
+                method: "SET",
+                from: `http://${this.config.deviceUrl}\/config`,
+                namespace: "Appliance.Control.Light",
+                timestamp: this.config.timestamp,
+                sign: `${this.config.sign}`,
+                payloadVersion: 1,
+              },
+            },
+          });
+        } catch (e) {
+          this.log(
+            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+            e
+          );
+        }
+    }
+
+    if (response) {
+      this.isOn = true;
+      this.log.debug("Set Hue succeeded:", response);
+      this.log(`${this.config.model} set hue to`, level);
+    } else {
+      this.log("Set hue failed:", this.hue);
+    }
+
+    /* Log to the console the value whenever this function is called */
+    this.log.debug("setHueCharacteristicHandler:", level);
+
+    /*
+     * The callback function should be called to return the value
+     * The first argument in the function should be null unless and error occured
+     */
+    callback(null, this.hue);
+  }
+
+  async setSatCharacteristicHandler(level, callback) {
+    /* this is called when HomeKit wants to update the value of the characteristic as defined in our getServices() function */
+    /* deviceUrl only requires ip address */
+
+    //this.log(this.config, this.config.deviceUrl);
+    let response;
+
+    /* Log to the console whenever this function is called */
+    this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
+
+    /*
+     * Differentiate requests based on device model.
+     */
+
+    this.log.debug("Sat Level IN: " + level);
+    this.sat = level
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.log.debug("RGB Level OUT: "+ this.rgb);
+
+    switch (this.config.model) {
+      default:
+        try {
+          response = await doRequest({
+            json: true,
+            method: "POST",
+            strictSSL: false,
+            url: `http://${this.config.deviceUrl}/config`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              payload: {
+                light: {
+                  channel: `${this.config.channel}`,
+                  luminance: `${this.bri}`,
+                  capacity: '1',
+                  rgb: `${this.rgb}`
+                },
+              },
+              header: {
+                messageId: `${this.config.messageId}`,
+                method: "SET",
+                from: `http://${this.config.deviceUrl}\/config`,
+                namespace: "Appliance.Control.Light",
+                timestamp: this.config.timestamp,
+                sign: `${this.config.sign}`,
+                payloadVersion: 1,
+              },
+            },
+          });
+        } catch (e) {
+          this.log(
+            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+            e
+          );
+        }
+    }
+
+    if (response) {
+      this.isOn = true;
+      this.log.debug("Set Sat succeeded:", response);
+      this.log(`${this.config.model} set sat to`, level);
+    } else {
+      this.log("Set sat failed:", this.hue);
+    }
+
+    /* Log to the console the value whenever this function is called */
+    this.log.debug("setSatCharacteristicHandler:", level);
+
+    /*
+     * The callback function should be called to return the value
+     * The first argument in the function should be null unless and error occured
+     */
+    callback(null, this.sat);
+  }
+
 }
 
 
@@ -624,4 +777,44 @@ function tempHome2Bulb(level){
 
 function tempBulb2Home(level){
   return Math.floor((100-level)/100*(500-140))+140;
+}
+
+function HSL2RGB(hue, sat, lit){
+  sat = sat/100
+  lit = lit/100
+  /* hue is in 0-360
+  *  sat is in 0-1
+  *  lit is in 0-1 */
+
+  c = (1-Math.abs(2*lit-1))*sat
+  x = c * (1- Math.abs((hue/60)%2-1))
+  m = lit-c/2
+
+  if(hue < 60){
+
+  }else if(hue < 120){
+    r = c; g = x; b = 0;
+  }else if(hue < 180){
+    r = x; g = c; b = 0;
+  }else if(hue < 240){
+    r = 0; g = c; b = x;
+  }else if(hue < 300){
+    r = 0; g = x; b = c;
+  }else{
+    r = c; g = 0; b = x;
+  }
+
+  r = (r+m)*255
+  g = (g+m)*255
+  b = (b+m)*255
+
+  return [r, g, b];
+}
+
+function RGB2BULB(rgb){
+  r = rgb[0]
+  g = rgb[1]
+  b = rgb[2]
+
+  return (r*255+g)*255+b
 }
