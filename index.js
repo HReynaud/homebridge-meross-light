@@ -35,6 +35,7 @@ class Meross {
     this.config = config;
 
     this.bri = 0;
+    this.tmp = 0;
     this.rgb = 0;
     this.hue = 0;
 
@@ -126,18 +127,18 @@ class Meross {
           .addCharacteristic(Characteristic.Brightness)
           .on("get", this.getBriCharacteristicHandler.bind(this))
           .on("set", this.setBriCharacteristicHandler.bind(this));
-        this.service
-          .addCharacteristic(Characteristic.Hue)
+        //this.service
+          //.addCharacteristic(Characteristic.Hue)
           //.on("get", this.getHueCharacteristicHandler.bind(this))
           //.on("set", this.setHueCharacteristicHandler.bind(this));
-        this.service
-          .addCharacteristic(Characteristic.Saturation)
+        //this.service
+          //.addCharacteristic(Characteristic.Saturation)
           //.on("get", this.getSatCharacteristicHandler.bind(this))
           //.on("set", this.setSatCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.ColorTemperature)
           //.on("get", this.getTmpCharacteristicHandler.bind(this))
-          //.on("set", this.setTmpCharacteristicHandler.bind(this));
+          .on("set", this.setTmpCharacteristicHandler.bind(this));
         break;
       default:
         this.service
@@ -335,7 +336,7 @@ class Meross {
     let response;
 
     /* Log to the console whenever this function is called */
-    this.log.debug(`calling setOnCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
+    this.log.debug(`calling setBriCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
     /*
      * Differentiate requests based on device model.
@@ -467,5 +468,80 @@ class Meross {
      */
     callback(null, this.bri);
   }
+
+  async setTmpCharacteristicHandler(level, callback) {
+    /* this is called when HomeKit wants to update the value of the characteristic as defined in our getServices() function */
+    /* deviceUrl only requires ip address */
+
+    //this.log(this.config, this.config.deviceUrl);
+    let response;
+
+    /* Log to the console whenever this function is called */
+    this.log.debug(`calling setTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
+
+    /*
+     * Differentiate requests based on device model.
+     */
+
+    this.log("Temperature Level: "+ level);
+
+    switch (this.config.model) {
+      default:
+        try {
+          response = await doRequest({
+            json: true,
+            method: "POST",
+            strictSSL: false,
+            url: `http://${this.config.deviceUrl}/config`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              payload: {
+                light: {
+                  channel: `${this.config.channel}`,
+                  luminance: `${this.bri}`,
+                  capacity: '2',
+                  temperature: `${level}`
+                },
+              },
+              header: {
+                messageId: `${this.config.messageId}`,
+                method: "SET",
+                from: `http://${this.config.deviceUrl}\/config`,
+                namespace: "Appliance.Control.Light",
+                timestamp: this.config.timestamp,
+                sign: `${this.config.sign}`,
+                payloadVersion: 1,
+              },
+            },
+          });
+        } catch (e) {
+          this.log(
+            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+            e
+          );
+        }
+    }
+
+    if (response) {
+      this.isOn = true;
+      this.tmp = level;
+      this.log.debug("Set succeeded:", response);
+      this.log(`${this.config.model} set brightness to`, level);
+    } else {
+      this.log("Set brightness failed:", this.tmp);
+    }
+
+    /* Log to the console the value whenever this function is called */
+    this.log.debug("setBriCharacteristicHandler:", level);
+
+    /*
+     * The callback function should be called to return the value
+     * The first argument in the function should be null unless and error occured
+     */
+    callback(null, this.tmp);
+  } 
+
 
 }
