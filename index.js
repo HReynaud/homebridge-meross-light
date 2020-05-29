@@ -595,7 +595,7 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-
+    this.mode = 0
     /* Log to the console whenever this function is called */
     this.log.debug(
       `calling getTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`
@@ -808,6 +808,18 @@ class Meross {
      * The callback function should be called to return the value
      * The first argument in the function should be null unless and error occured
      */
+    callback(null, this.sat);
+  }
+
+  async getHueCharacteristicHandler(callback) {
+
+    this.mode = 1;
+    callback(null, this.hue);
+  }
+
+  async getSatCharacteristicHandler(callback) {
+
+    this.mode = 1;
     callback(null, this.sat);
   }
 
