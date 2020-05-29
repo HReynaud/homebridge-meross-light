@@ -545,7 +545,7 @@ class Meross {
     callback(null, this.tmp);
   } 
 
-  async getBriCharacteristicHandler(callback) {
+  async getTmpCharacteristicHandler(callback) {
     /*
      * this is called when HomeKit wants to retrieve the current state of the characteristic as defined in our getServices() function
      * it's called each time you open the Home app or when you open control center
@@ -556,7 +556,7 @@ class Meross {
 
     /* Log to the console whenever this function is called */
     this.log.debug(
-      `calling getOnCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`
+      `calling getTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`
     );
 
     try {
