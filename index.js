@@ -40,7 +40,7 @@ class Meross {
     this.hue = 0;
     this.sat = 0;
 
-    this.mode = 0; // 0 = temperature, 1 = rgb
+    this.mode = 1; // 0 = temperature, 1 = rgb
 
     /*
      * A HomeKit accessory can have many "services". This will create our base service,
@@ -132,16 +132,16 @@ class Meross {
           .on("set", this.setBriCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Hue)
+          //.on("get", this.getHueCharacteristicHandler.bind(this))
           .on("set", this.setHueCharacteristicHandler.bind(this));
-
         this.service
           .addCharacteristic(Characteristic.Saturation)
           //.on("get", this.getSatCharacteristicHandler.bind(this))
           .on("set", this.setSatCharacteristicHandler.bind(this));
-        this.service
-          .addCharacteristic(Characteristic.ColorTemperature)
-          //.on("get", this.getTmpCharacteristicHandler.bind(this))
-          .on("set", this.setTmpCharacteristicHandler.bind(this));
+        // this.service
+        //   .addCharacteristic(Characteristic.ColorTemperature)
+        //   .on("get", this.getTmpCharacteristicHandler.bind(this))
+        //   .on("set", this.setTmpCharacteristicHandler.bind(this));
         break;
       default:
         this.service
@@ -831,15 +831,15 @@ function HSL2RGB(hue, sat, lit){
   var m = lit-c/2
 
   if(hue < 60){
-
-  }else if(hue < 120){
     var r = c; var g = x; var b = 0;
-  }else if(hue < 180){
+  }else if(hue < 120){
     var r = x; var g = c; var b = 0;
-  }else if(hue < 240){
+  }else if(hue < 180){
     var r = 0; var g = c; var b = x;
-  }else if(hue < 300){
+  }else if(hue < 240){
     var r = 0; var g = x; var b = c;
+  }else if(hue < 300){
+    var r = x; var g = 0; var b = c;
   }else{
     var r = c; var g = 0; var b = x;
   }
@@ -852,42 +852,9 @@ function HSL2RGB(hue, sat, lit){
 }
 
 function RGB2BULB(rgb){
-  let r = rgb[0]
-  let g = rgb[1]
-  let b = rgb[2]
+  let r = parseInt(rgb[0]);
+  let g = parseInt(rgb[1]);
+  let b = parseInt(rgb[2]);
 
   return Math.floor((r*255+g)*255+b)
-}
-
-
-function hslToRgb(h, s, l) {
-
-  var javob = HSBtoRGB2(h,s,l);
-  return {red: parseInt(javob[0]), green: parseInt(javob[1]), blue: parseInt(javob[2])};
-}
-
-function HSBtoRGB2(h, s, v) {
-var round = Math.round
-var s = s / 100, v = v / 100
-var c = v * s
-var hh = h / 60
-var x = c * (1 - Math.abs(hh % 2 - 1))
-var m = v - c
-
-var p = parseInt(hh, 10)
-var rgb = (
-  p === 0 ? [c, x, 0] :
-  p === 1 ? [x, c, 0] :
-  p === 2 ? [0, c, x] :
-  p === 3 ? [0, x, c] :
-  p === 4 ? [x, 0, c] :
-  p === 5 ? [c, 0, x] :
-  []
-)
-
-return [
-  round(255 * (rgb[0] + m)),
-  round(255 * (rgb[1] + m)),
-  round(255 * (rgb[2] + m))
-]
 }
