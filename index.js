@@ -876,9 +876,9 @@ function RGB2BULB(rgb){
 
 function HUE2PRIMARY(hue){
   var out = 0;
-  if(hue > 60 || hue <=180){
+  if(hue > 60 && hue <=180){
     out = 65280;
-  }else if(hue > 180 || hue <= 300){
+  }else if(hue > 180 && hue <= 300){
     out = 255;
   }else{
     out = 16711680;
