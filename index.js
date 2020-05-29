@@ -40,6 +40,8 @@ class Meross {
     this.hue = 0;
     this.sat = 0;
 
+    this.mode = 0; // 0 = temperature, 1 = rgb
+
     /*
      * A HomeKit accessory can have many "services". This will create our base service,
      * Service types are defined in this code: https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js
@@ -343,8 +345,8 @@ class Meross {
      * Differentiate requests based on device model.
      */
 
-    switch (this.config.model) {
-      default:
+    switch (this.mode) {
+      case 0:
         try {
           response = await doRequest({
             json: true,
@@ -360,6 +362,44 @@ class Meross {
                   channel: `${this.config.channel}`,
                   luminance: `${level}`,
                   capacity: '4',
+                },
+              },
+              header: {
+                messageId: `${this.config.messageId}`,
+                method: "SET",
+                from: `http://${this.config.deviceUrl}\/config`,
+                namespace: "Appliance.Control.Light",
+                timestamp: this.config.timestamp,
+                sign: `${this.config.sign}`,
+                payloadVersion: 1,
+              },
+            },
+          });
+        } catch (e) {
+          this.log(
+            `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+            e
+          );
+        }
+        break;
+      case 1:
+        this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, level))
+        try {
+          response = await doRequest({
+            json: true,
+            method: "POST",
+            strictSSL: false,
+            url: `http://${this.config.deviceUrl}/config`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              payload: {
+                light: {
+                  channel: `${this.config.channel}`,
+                  luminance: `${this.bri}`,
+                  capacity: '1',
+                  rgb: `${this.rgb}`
                 },
               },
               header: {
@@ -476,7 +516,7 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-
+    this.mode = 0;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setTmpCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -622,7 +662,7 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-
+    this.mode = 1;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -632,7 +672,7 @@ class Meross {
 
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -698,7 +738,7 @@ class Meross {
 
     //this.log(this.config, this.config.deviceUrl);
     let response;
-
+    this.mode = 1;
     /* Log to the console whenever this function is called */
     this.log.debug(`calling setHueCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`);
 
@@ -708,7 +748,7 @@ class Meross {
 
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -817,4 +857,37 @@ function RGB2BULB(rgb){
   let b = rgb[2]
 
   return Math.floor((r*255+g)*255+b)
+}
+
+
+function hslToRgb(h, s, l) {
+
+  var javob = HSBtoRGB2(h,s,l);
+  return {red: parseInt(javob[0]), green: parseInt(javob[1]), blue: parseInt(javob[2])};
+}
+
+function HSBtoRGB2(h, s, v) {
+var round = Math.round
+var s = s / 100, v = v / 100
+var c = v * s
+var hh = h / 60
+var x = c * (1 - Math.abs(hh % 2 - 1))
+var m = v - c
+
+var p = parseInt(hh, 10)
+var rgb = (
+  p === 0 ? [c, x, 0] :
+  p === 1 ? [x, c, 0] :
+  p === 2 ? [0, c, x] :
+  p === 3 ? [0, x, c] :
+  p === 4 ? [x, 0, c] :
+  p === 5 ? [c, 0, x] :
+  []
+)
+
+return [
+  round(255 * (rgb[0] + m)),
+  round(255 * (rgb[1] + m)),
+  round(255 * (rgb[2] + m))
+]
 }
