@@ -823,12 +823,13 @@ function HSL2RGB(hue, sat, lit){
   sat = sat/100
   sat = 1
   lit = lit/100
+  lit = 0.5
   /* hue is in 0-360
   *  sat is in 0-1
   *  lit is in 0-1 */
   var c=0, x=0, m=0;
 
-  c = (1- Math.abs(2*lit -1) )*sat
+  c = (1- Math.abs(2*lit - 1) )*sat
   x = c * (1- Math.abs((hue/60)%2-1))
   m = lit-c/2
 
