@@ -12,7 +12,7 @@
         "type": "string",
         "required": true,
         "oneOf": [
-	  {
+	        {
             "title": "MSL-120",
             "enum": ["MSL120"]
           },

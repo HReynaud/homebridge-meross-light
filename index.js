@@ -93,7 +93,9 @@ class Meross {
     }
      */
     this.service = new Service.Lightbulb(this.config.name);
-    this.log('Created new lightbulb with name' + this.config.model + this.name);
+    this.log('Created new lightbulb: ' + this.config.model);
+    this.log('Name of the bulb:      ' + this.config.name);
+    this.log('Bulb address:          ' + this.config.deviceUrl)
 
   }
 
