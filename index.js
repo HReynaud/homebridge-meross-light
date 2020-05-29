@@ -710,7 +710,7 @@ class Meross {
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
     this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
-    this.rgb = HUE2PRIMARY(this.hue);
+    //this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
