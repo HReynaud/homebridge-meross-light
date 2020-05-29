@@ -825,10 +825,11 @@ function HSL2RGB(hue, sat, lit){
   /* hue is in 0-360
   *  sat is in 0-1
   *  lit is in 0-1 */
+  var c=0, x=0, m=0;
 
-  var c = (1-Math.abs(2*lit-1))*sat
-  var x = c * (1- Math.abs((hue/60)%2-1))
-  var m = lit-c/2
+  c = (1- Math.abs(2*lit -1) )*sat
+  x = c * (1- Math.abs((hue/60)%2-1))
+  m = lit-c/2
 
   if(hue < 60){
     var r = c; var g = x; var b = 0;
@@ -852,9 +853,9 @@ function HSL2RGB(hue, sat, lit){
 }
 
 function RGB2BULB(rgb){
-  let r = parseInt(rgb[0]);
-  let g = parseInt(rgb[1]);
-  let b = parseInt(rgb[2]);
+  let r = Math.round(rgb[0]);
+  let g = Math.round(rgb[1]);
+  let b = Math.round(rgb[2]);
 
-  return Math.floor((r*255+g)*255+b)
+  return Math.round((r*255+g)*255+b)
 }
