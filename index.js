@@ -283,7 +283,7 @@ class Meross {
             messageId: `${this.config.messageId}`,
             method: "GET",
             from: `http://${this.config.deviceUrl}/config`,
-            namespace: "Appliance.System.Ability",
+            namespace: "Appliance.System.All",
             timestamp: this.config.timestamp,
             sign: `${this.config.sign}`,
             payloadVersion: 1,
@@ -304,9 +304,8 @@ class Meross {
     switch (this.config.model) {
       default:
         if (response) {
-          this.log(response)
           let onOff =
-            response.payload.all.digest.togglex[`${this.config.channel}`].onoff;
+            response.payload.all.digest.togglex[0].onoff;
 
           this.log.debug("Retrieved status successfully: ", onOff);
           this.isOn = onOff;
