@@ -124,7 +124,7 @@ class Meross {
           .on("set", this.setOnCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Brightness)
-          //.on("get", this.getBriCharacteristicHandler.bind(this))
+          .on("get", this.getBriCharacteristicHandler.bind(this))
           .on("set", this.setBriCharacteristicHandler.bind(this));
         this.service
           .addCharacteristic(Characteristic.Hue)
@@ -397,5 +397,75 @@ class Meross {
      */
     callback(null, this.bri);
   } 
+
+  async getBriCharacteristicHandler(callback) {
+    /*
+     * this is called when HomeKit wants to retrieve the current state of the characteristic as defined in our getServices() function
+     * it's called each time you open the Home app or when you open control center
+     */
+
+    //this.log(this.config, this.config.deviceUrl);
+    let response;
+
+    /* Log to the console whenever this function is called */
+    this.log.debug(
+      `calling getOnCharacteristicHandler for ${this.config.model} at ${this.config.deviceUrl}...`
+    );
+
+    try {
+      response = await doRequest({
+        json: true,
+        method: "POST",
+        strictSSL: false,
+        url: `http://${this.config.deviceUrl}/config`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          payload: {},
+          header: {
+            messageId: `${this.config.messageId}`,
+            method: "GET",
+            from: `http://${this.config.deviceUrl}/config`,
+            namespace: "Appliance.System.All",
+            timestamp: this.config.timestamp,
+            sign: `${this.config.sign}`,
+            payloadVersion: 1,
+          },
+        },
+      });
+    } catch (e) {
+      this.log(
+        `Failed to POST to the Meross Device ${this.config.model} at ${this.config.deviceUrl}:`,
+        e
+      );
+    }
+
+    /*
+     * Differentiate response based on device model.
+     */
+
+    switch (this.config.model) {
+      default:
+        if (response) {
+          this.bri = response.payload.all.digest.light.luminance;
+          this.log.debug("Retrieved status successfully: ", bri);
+        } else {
+          this.log.debug("Retrieved status unsuccessfully.");
+          this.isOn = false;
+        }
+    }
+
+    /* Log to the console the value whenever this function is called */
+    this.log.debug("getBriCharacteristicHandler:", this.bri);
+
+    /*
+     * The callback function should be called to return the value
+     * The first argument in the function should be null unless and error occured
+     * The second argument in the function should be the current value of the characteristic
+     * This is just an example so we will return the value from `this.isOn` which is where we stored the value in the set handler
+     */
+    callback(null, this.bri);
+  }
 
 }
