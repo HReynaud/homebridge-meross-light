@@ -384,6 +384,7 @@ class Meross {
         break;
       case 1:
         this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+        this.rgb = HUE2PRIMARY(this.hue);
         try {
           response = await doRequest({
             json: true,
@@ -672,7 +673,8 @@ class Meross {
 
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
+    this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -749,6 +751,7 @@ class Meross {
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
     this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
+    this.rgb = HUE2PRIMARY(this.hue);
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -862,11 +865,23 @@ function RGB2BULB(rgb){
   let tmp = Math.round((r*255+g)*255+b)
   
   if(tmp > 8000000){
-    var out = 16777214;
+    var out = 16713000;
   }else if(tmp > 30000){
     var out = 65025;
   }else{
     var out = 255;
+  }
+  return out;
+}
+
+function HUE2PRIMARY(hue){
+  var out = 0;
+  if(hue > 60 || hue <=180){
+    out = 65280;
+  }else if(hue > 180 || hue <= 300){
+    out = 255;
+  }else{
+    out = 16711680;
   }
   return out;
 }
