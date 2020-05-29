@@ -1,6 +1,7 @@
 "use strict";
 
 const request = require("request");
+var colorsys = require( 'colorsys' );
 let Service, Characteristic;
 
 // Wrap request with a promise to make it awaitable
@@ -626,11 +627,11 @@ class Meross {
     /*
      * Differentiate requests based on device model.
      */
-
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
-    this.rgb = HUE2PRIMARY(this.hue);
+    // this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
+    // this.rgb = HUE2PRIMARY(this.hue);
+    this.rgb = colorsys.hsvToHex(this.hue, this.sat, this.bri)
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -705,8 +706,9 @@ class Meross {
 
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
-    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
-    this.rgb = HUE2PRIMARY(this.hue);
+    // this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
+    // this.rgb = HUE2PRIMARY(this.hue);
+    this.rgb = colorsys.hsvToHex(this.hue, this.sat, this.bri)
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
