@@ -383,7 +383,7 @@ class Meross {
         }
         break;
       case 1:
-        this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, level))
+        this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, level))
         try {
           response = await doRequest({
             json: true,
@@ -672,7 +672,7 @@ class Meross {
 
     this.log.debug("HUE Level IN: " + level);
     this.hue = level
-    this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, this.bri))
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -748,7 +748,7 @@ class Meross {
 
     this.log.debug("Sat Level IN: " + level);
     this.sat = level
-    this.rgb = RGB2BULB(HSBtoRGB2(this.hue, this.sat, this.bri))
+    this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
