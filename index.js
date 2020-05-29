@@ -631,7 +631,7 @@ class Meross {
     this.hue = level
     // this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
     // this.rgb = HUE2PRIMARY(this.hue);
-    this.rgb = colorsys.hsvToHex(this.hue, this.sat, this.bri)
+    this.rgb = colorsys.hex2Decimal(colorsys.hsvToHex(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
@@ -708,7 +708,7 @@ class Meross {
     this.sat = level
     // this.rgb = RGB2BULB(HSL2RGB(this.hue, this.sat, this.bri));
     // this.rgb = HUE2PRIMARY(this.hue);
-    this.rgb = colorsys.hsvToHex(this.hue, this.sat, this.bri)
+    this.rgb = colorsys.hex2Decimal(colorsys.hsvToHex(this.hue, this.sat, this.bri))
     this.log.debug("RGB Level OUT: "+ this.rgb);
 
     switch (this.config.model) {
