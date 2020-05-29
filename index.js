@@ -484,7 +484,7 @@ class Meross {
      */
 
     this.log.debug("Temperature Level IN: " + level);
-    level = Math.floor( (level-140)/(500-140)*100 )
+    level = 100 - Math.floor( (level-140)/(500-140)*99 )
     this.log.debug("Temperature Level OUT: "+ level);
 
     switch (this.config.model) {
