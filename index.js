@@ -357,7 +357,8 @@ class Meross {
                 light: {
                   channel: `${this.config.channel}`,
                   luminance: `${level}`,
-                  capacity: `1`,
+                  capacity: '1',
+                  rgb: '-1'
                 },
               },
               header: {
