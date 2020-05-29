@@ -786,22 +786,22 @@ function HSL2RGB(hue, sat, lit){
   *  sat is in 0-1
   *  lit is in 0-1 */
 
-  let c = (1-Math.abs(2*lit-1))*sat
-  let x = c * (1- Math.abs((hue/60)%2-1))
-  let m = lit-c/2
+  var c = (1-Math.abs(2*lit-1))*sat
+  var x = c * (1- Math.abs((hue/60)%2-1))
+  var m = lit-c/2
 
   if(hue < 60){
 
   }else if(hue < 120){
-    let r = c; let g = x; let b = 0;
+    var r = c; var g = x; var b = 0;
   }else if(hue < 180){
-    let r = x; let g = c; let b = 0;
+    var r = x; var g = c; var b = 0;
   }else if(hue < 240){
-    let r = 0; let g = c; let b = x;
+    var r = 0; var g = c; var b = x;
   }else if(hue < 300){
-    let r = 0; let g = x; let b = c;
+    var r = 0; var g = x; var b = c;
   }else{
-    let r = c; let g = 0; let b = x;
+    var r = c; var g = 0; var b = x;
   }
 
   r = (r+m)*255
