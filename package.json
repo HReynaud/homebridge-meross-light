@@ -1,27 +1,14 @@
 {
-  "name": "homebridge-meross",
-  "version": "2.1.0",
-  "description": "A Meross Plugin for Homebridge",
+  "name": "homebridge-meross-light",
+  "version": "2.1.1",
+  "description": "A Meross Lightbulb Plugin for Homebridge",
   "main": "index.js",
   "scripts": {
     "developer": "DEBUG=meross homebridge -D -U `pwd` -P `pwd`",
     "lint": "jshint package.json *.js",
     "watch": "nodemon"
   },
-  "author": "donavanbecker/dylanfrankcom",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/homebridge-plugins/homebridge-meross.git"
-  },
-  "bugs": {
-    "url": "https://github.com/homebridge-plugins/homebridge-meross/issues"
-  },
-  "license": "MIT",
-  "keywords": [
-    "homebridge-plugin",
-    "meross",
-    "homebridge"
-  ],
+  "author": "HReynaud & donavanbecker/dylanfrankcom",
   "dependencies": {
     "request": ">=2.88.0"
   },
