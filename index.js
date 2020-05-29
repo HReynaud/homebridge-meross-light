@@ -19,7 +19,7 @@ function doRequest(options) {
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-meross", "Meross", Meross);
+  homebridge.registerAccessory("homebridge-meross-light", "Meross-Light", Meross);
 };
 
 class Meross {
@@ -136,6 +136,10 @@ class Meross {
           .addCharacteristic(Characteristic.Saturation)
           .on("get", this.getSatCharacteristicHandler.bind(this))
           .on("set", this.setSatCharacteristicHandler.bind(this));
+        this.service
+          .addCharacteristic(Characteristic.ColorTemperature)
+          .on("get", this.getTmpCharacteristicHandler.bind(this))
+          .on("set", this.setTmpCharacteristicHandler.bind(this));
         break;
       default:
         this.service
